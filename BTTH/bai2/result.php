@@ -1,43 +1,42 @@
 <?php
-$quizFile = 'questions.txt';
-$quizContent = file_get_contents($quizFile);
+// Kết nối cơ sở dữ liệu
+$conn = new mysqli('localhost', 'root', '', 'quiz');
 
-$questions = explode("ANSWER:", $quizContent);
-
-$answers = [];
-
-foreach ($questions as $questionBlock) {
-    $lines = explode("\n", trim($questionBlock));
-    if (count($lines) > 1) {
-        $answers[] = trim(end($lines));
-    }
+if ($conn->connect_error) {
+    die("Kết nối thất bại: " . $conn->connect_error);
 }
 
-
-$userAnswers = $_POST;
+// Lấy câu trả lời từ form
+$answers = $_POST['answer'];
 $score = 0;
 
-foreach ($answers as $index => $correctAnswer) {
-    $userAnswerKey = "question_$index";
-    if (isset($userAnswers[$userAnswerKey]) && $userAnswers[$userAnswerKey] === $correctAnswer) {
-        $score++;
+// Kiểm tra đáp án
+foreach ($answers as $id => $answer) {
+    $sql = "SELECT correct_answer FROM questions WHERE id = $id";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row['correct_answer'] === $answer) {
+            $score++;
+        }
     }
 }
 
-$totalQuestions = count($answers);
+// Tổng số câu hỏi
+$total_questions = count($answers);
+
+// Hiển thị kết quả
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết Quả</title>
+    <title>Kết quả</title>
 </head>
 <body>
-    <div style="text-align: center;">
-        <h1>Kết Quả</h1>
-        <p>Bạn đã trả lời đúng <?php echo $score; ?> trên tổng số <?php echo $totalQuestions; ?> câu hỏi.</p>
-        <a href="index.php">Làm lại</a>
-    </div>
+    <h1>Kết quả kiểm tra</h1>
+    <p>Điểm số của bạn: <?php echo $score; ?> / <?php echo $total_questions; ?></p>
+    <a href="index.php">Làm lại bài kiểm tra</a>
 </body>
 </html>
