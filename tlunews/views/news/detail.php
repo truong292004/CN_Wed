@@ -1,8 +1,26 @@
-<h1><?= htmlspecialchars($news['title']) ?></h1>
-<img src="uploads/<?= htmlspecialchars($news['image']) ?>" alt="<?= htmlspecialchars($news['title']) ?>" style="width: 300px; height: auto;">
-<p><?= htmlspecialchars($news['content']) ?></p>
-<p><strong>Danh mục:</strong> <?= htmlspecialchars($news['category_name']) ?></p>
-<p><strong>Ngày đăng:</strong> <?= htmlspecialchars($news['created_at']) ?></p>
-<a href="index.php?controller=news&action=index">Quay lại danh sách</a>
+<?php include 'views/header.php'; ?>
 
+<div class="row">
+    <div class="col-md-8">
+        <article>
+            <h1 class="mb-4"><?php echo htmlspecialchars($news['title']); ?></h1>
+            <div class="mb-3">
+                <small class="text-muted">
+                    Đăng ngày: <?php echo date('d/m/Y', strtotime($news['created_at'])); ?>
+                    | Danh mục: <?php echo htmlspecialchars($category); ?>
+                </small>
+            </div>
+            
+            <?php if ($news['image']): ?>
+                <img src="<?php echo htmlspecialchars($news['image']); ?>"
+                     class="img-fluid mb-4" alt="<?php echo htmlspecialchars($news['title']); ?>">
+            <?php endif; ?>
+            
+            <div class="content">
+                <?php echo nl2br(htmlspecialchars($news['content'])); ?>
+            </div>
+        </article>
+    </div>
+</div>
 
+<?php include 'views/footer.php'; ?>
