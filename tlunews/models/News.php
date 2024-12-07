@@ -1,50 +1,55 @@
 <?php
-class News {
-    private $db;
+class News
+{
+    private $pdo;
 
-    public function __construct() {
-        $this->db = new mysqli('localhost', 'root', '', 'mvc_db'); // Thay thông tin kết nối DB
-        if ($this->db->connect_error) {
-            die("Kết nối thất bại: " . $this->db->connect_error);
-        }
+    public function __construct($pdo)
+    {
+        $this->pdo = $pdo;
     }
 
-    // Lấy danh sách tin tức
-    public function getAllNews() {
-        $query = "
-            SELECT news.*, categories.name AS category_name
-            FROM news
-            LEFT JOIN categories ON news.category_id = categories.id
-            ORDER BY news.created_at DESC";
-        $result = $this->db->query($query);
-        return $result->fetch_all(MYSQLI_ASSOC);
+    // Lấy tất cả tin tức
+    public function getAll()
+    {
+        $query = "SELECT * FROM news ORDER BY created_at DESC";
+        $stmt = $this->pdo->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Lấy chi tiết tin tức theo ID
-    public function getNewsById($id) {
-        $query = "
-            SELECT news.*, categories.name AS category_name
-            FROM news
-            LEFT JOIN categories ON news.category_id = categories.id
-            WHERE news.id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+    // Lấy tin tức theo ID
+    public function getById($id)
+    {
+        $query = "SELECT * FROM news WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Tìm kiếm tin tức
-    public function searchNews($keyword) {
-        $query = "
-            SELECT news.*, categories.name AS category_name
-            FROM news
-            LEFT JOIN categories ON news.category_id = categories.id
-            WHERE news.title LIKE ? OR news.content LIKE ?";
-        $stmt = $this->db->prepare($query);
-        $searchTerm = "%$keyword%";
-        $stmt->bind_param('ss', $searchTerm, $searchTerm);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    // Lấy tin tức theo danh mục
+    public function getAllByCategoryId($categoryId)
+    {
+        $query = "SELECT * FROM news WHERE category_id = ? ORDER BY created_at DESC";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$categoryId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Tìm kiếm tin tức theo từ khóa
+    public function searchByKeyword($keyword)
+    {
+        $query = "SELECT * FROM news WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['%' . $keyword . '%', '%' . $keyword . '%']);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy danh mục tin tức theo ID
+    public function getCategoryById($categoryId)
+    {
+        $query = "SELECT * FROM categories WHERE id = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$categoryId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
-
+?>
