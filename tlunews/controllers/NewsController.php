@@ -1,28 +1,30 @@
 <?php
-class NewsController {
-    // Hiển thị danh sách tin tức
-    public function index() {
-        require_once 'models/News.php';
-        $newsModel = new News();
-        $newsList = $newsModel->getAllNews();
-        require_once 'views/news/index.php';
+include_once '../config/database.php';
+include_once '../models/News.php';
+include_once '../models/Category.php';
+
+class NewsController
+{
+    private $newsModel;
+    private $categoryModel;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->newsModel = new News($database->pdo);
+        $this->categoryModel = new Category($database->pdo);
     }
 
-    // Hiển thị chi tiết tin tức
-    public function detail($id) {
-        require_once 'models/News.php';
-        $newsModel = new News();
-        $news = $newsModel->getNewsById($id);
-        require_once 'views/news/detail.php';
+    public function getAllNews()
+    {
     }
 
-    // Tìm kiếm tin tức
-    public function search() {
-        require_once 'models/News.php';
-        $keyword = $_GET['keyword'] ?? '';
-        $newsModel = new News();
-        $searchResults = $newsModel->searchNews($keyword);
-        require_once 'views/news/search.php';
+
+    public function detail($id)
+    {
+        
     }
+
 }
 
+?>
