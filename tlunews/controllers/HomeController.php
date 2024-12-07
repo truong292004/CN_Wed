@@ -1,7 +1,4 @@
 <?php
-include_once 'config/database.php';
-include_once 'models/News.php';
-include_once 'models/Category.php';
 class HomeController
 {
     private $newsModel;
@@ -14,45 +11,37 @@ class HomeController
         $this->categoryModel = new Category($database->pdo);
     }
 
+    // Hiển thị danh sách tin tức
     public function index()
     {
         $newsList = $this->newsModel->getAll();
         $categoryList = $this->categoryModel->getAll();
-        $_SESSION['news'] = [];
-        $_SESSION['category'] = [];
-        $_SESSION['news'] = $newsList;
-        $_SESSION['category'] = $categoryList;
         include 'views/home/index.php';
-
     }
 
-    public function detail($id) {
+    // Xem chi tiết tin tức
+    public function detail($id)
+    {
         $news = $this->newsModel->getById($id);
-        $category = $this->categoryModel->getById($news['category_id'])['name'];
+        $category = $this->newsModel->getCategoryById($news['category_id']); // Lấy tên danh mục
+        $news['category_name'] = $category['name']; // Thêm tên danh mục vào tin tức
         include 'views/news/detail.php';
     }
 
-    public function filter($categoryId){
-        unset($_SESSION['news']);
-        $newsList = $this->newsModel->getAllByCategoryId($categoryId);
-        $_SESSION['news'] = $newsList;
-        include 'views/home/index.php';
-    }
-
-    public function search($keyword){
-        unset($_SESSION['news']);
-        $newsList = $this->newsModel->getByTitleOrContent($keyword);
-        $_SESSION['news'] = $newsList;
-        include 'views/home/index.php';
-    }
-
-    public function logout()
+    // Tìm kiếm tin tức theo từ khóa
+    public function search($keyword)
     {
-        session_unset();
-        session_destroy();
-        header('Location: index.php?action=login');
-        exit();
+        $newsList = $this->newsModel->searchByKeyword($keyword);
+        $categoryList = $this->categoryModel->getAll();
+        include 'views/home/index.php';
+    }
+
+    // Lọc tin tức theo danh mục
+    public function filter($categoryId)
+    {
+        $newsList = $this->newsModel->getAllByCategoryId($categoryId);
+        $categoryList = $this->categoryModel->getAll();
+        include 'views/home/index.php';
     }
 }
-
 ?>
