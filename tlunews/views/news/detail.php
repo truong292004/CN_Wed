@@ -1,26 +1,16 @@
-<?php include 'views/header.php'; ?>
-
-<div class="row">
-    <div class="col-md-8">
-        <article>
-            <h1 class="mb-4"><?php echo htmlspecialchars($news['title']); ?></h1>
-            <div class="mb-3">
-                <small class="text-muted">
-                    Đăng ngày: <?php echo date('d/m/Y', strtotime($news['created_at'])); ?>
-                    | Danh mục: <?php echo htmlspecialchars($category); ?>
-                </small>
-            </div>
-            
-            <?php if ($news['image']): ?>
-                <img src="<?php echo htmlspecialchars($news['image']); ?>"
-                     class="img-fluid mb-4" alt="<?php echo htmlspecialchars($news['title']); ?>">
-            <?php endif; ?>
-            
-            <div class="content">
-                <?php echo nl2br(htmlspecialchars($news['content'])); ?>
-            </div>
-        </article>
-    </div>
-</div>
-
-<?php include 'views/footer.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Detail</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link file CSS của bạn -->
+</head>
+<body>
+    <h1><?= htmlspecialchars($news['title']) ?></h1>
+    <p><strong>Category:</strong> <?= htmlspecialchars($news['category_name']) ?></p> <!-- Hiển thị tên danh mục -->
+    <p><strong>Published:</strong> <?= date('d M Y', strtotime($news['created_at'])) ?></p> <!-- Hiển thị ngày đăng -->
+    <p><?= nl2br(htmlspecialchars($news['content'])) ?></p> <!-- Hiển thị nội dung tin tức -->
+    <a href="index.php">Back to list</a>
+</body>
+</html>
