@@ -23,7 +23,6 @@ class HomeController
         $_SESSION['news'] = $newsList;
         $_SESSION['category'] = $categoryList;
         include 'views/home/index.php';
-
     }
 
     public function detail($id) {
