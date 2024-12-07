@@ -25,10 +25,25 @@ class HomeController
         include 'views/home/index.php';
     }
 
+    public function detail($id) {
+        $news = $this->newsModel->getById($id);
+        $category = $this->categoryModel->getById($news['category_id'])['name'];
+        include 'views/news/detail.php';
+    }
 
+    public function filter($categoryId){
+        unset($_SESSION['news']);
+        $newsList = $this->newsModel->getAllByCategoryId($categoryId);
+        $_SESSION['news'] = $newsList;
+        include 'views/home/index.php';
+    }
 
-
-  
+    public function search($keyword){
+        unset($_SESSION['news']);
+        $newsList = $this->newsModel->getByTitleOrContent($keyword);
+        $_SESSION['news'] = $newsList;
+        include 'views/home/index.php';
+    }
 
     public function logout()
     {
