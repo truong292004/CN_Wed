@@ -91,7 +91,45 @@ class News {
 
         return $stmt->execute();
     }
+// Get total number of news items (for pagination)
+    public function getTotalCount() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
 
+    // Get news by category
+    public function getNewsByCategory($category_id) {
+        $query = "SELECT n.id, n.title, n.content, n.category_id, n.created_at, n.updated_at, c.name AS category_name
+                  FROM " . $this->table . " n
+                  JOIN categories c ON n.category_id = c.id
+                  WHERE n.category_id = :category_id
+                  ORDER BY n.created_at DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':category_id', $category_id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function searchByKeyword($keyword)
+    {
+        $query = "SELECT * FROM " . $this->table . " WHERE title LIKE :keyword OR content LIKE :keyword";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Dùng phương thức bindParam để chèn giá trị vào query
+        $keywordParam = "%" . $keyword . "%";
+        $stmt->bindParam(':keyword', $keywordParam);
+
+        // Thực thi câu lệnh
+        $stmt->execute();
+
+        // Kiểm tra và trả về kết quả tìm kiếm
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
     
 ?>
 
