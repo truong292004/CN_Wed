@@ -65,5 +65,76 @@ class AdminController {
         header('Location: index.php?action=login');  // Quay lại trang login
         exit();
     }
+    // Thêm tin tức mới
+    public function addNews() {
+        // Kiểm tra xem form đã được submit chưa
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Lấy dữ liệu từ form
+            $title = $_POST['title'];
+            $content = $_POST['content'];
+            $category_id = $_POST['category_id'];
+            
+            // Thêm tin tức vào cơ sở dữ liệu
+            if ($this->newsModel->addNews($title, $content, $category_id)) {
+                header('Location: index.php?action=news');  // Quay lại trang danh sách tin tức
+                exit();
+            } else {
+                // Nếu thêm thất bại, hiển thị thông báo lỗi
+                $error = 'Không thể thêm tin tức!';
+            }
+        }
+
+        // Lấy danh sách các danh mục để hiển thị trong form
+        $categoryList = $this->categoryModel->getAll();
+        
+        // Gọi view thêm tin tức
+        require_once 'views/admin/news/add.php';  
+    }
+
+    // Chỉnh sửa tin tức
+    public function editNews($id) {
+        // Kiểm tra nếu form đã được submit
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Lấy dữ liệu từ form
+            $title = $_POST['title'];
+            $content = $_POST['content'];
+            $category_id = $_POST['category_id'];
+    
+            // Cập nhật tin tức trong cơ sở dữ liệu
+            if ($this->newsModel->updateNews($id, $title, $content, $category_id)) {
+                header('Location: index.php?action=news');  // Quay lại trang danh sách tin tức
+                exit();
+            } else {
+                $error = 'Không thể sửa tin tức!';
+            }
+        }
+
+        // Lấy thông tin tin tức theo ID
+        $news = $this->newsModel->getById($id);
+    if (!$news) {
+        // Nếu không tìm thấy tin tức, quay lại trang danh sách tin tức
+        header('Location: index.php?action=news');
+        exit();
+    }
+
+        // Lấy danh sách các danh mục
+        $categoryList = $this->categoryModel->getAll();
+
+        // Gọi view chỉnh sửa tin tức
+        require_once 'views/admin/news/edit.php';
+    }
+
+    // Xóa tin tức
+    public function deleteNews($id) {
+        // Xóa tin tức trong cơ sở dữ liệu
+        if ($this->newsModel->deleteNewsById($id)) {
+            header('Location: index.php?action=news');  // Quay lại trang danh sách tin tức
+            exit();
+        } else {
+            // Nếu xóa thất bại, hiển thị thông báo lỗi
+            $error = 'Không thể xóa tin tức!';
+        }
+    }
+
 }
 ?>
